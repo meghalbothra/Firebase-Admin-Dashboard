@@ -63,6 +63,10 @@ llm: ChatGoogleGenerativeAI = ChatGoogleGenerativeAI(
     model="models/gemini-1.5-flash", google_api_key=google_api_key
 )
 
+@app.get("/")
+async def read_root():
+    return {"message": "Hello, World!"}
+
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(chat_request: ChatRequest, request: Request):
     """
