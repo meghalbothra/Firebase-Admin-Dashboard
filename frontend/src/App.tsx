@@ -9,7 +9,7 @@ import Alert from './components/Settings';
 
 function App() {
   return (
-    <Router basename='frontend'>
+    <Router>
       <Routes>
         {/* Protecting the Dashboard route with PrivateRoute */}
         <Route
