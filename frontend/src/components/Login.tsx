@@ -14,11 +14,11 @@ import {
   setDoc,
   arrayUnion,
 } from "firebase/firestore";
+import { signOut } from 'firebase/auth';
+import { auth } from "../firebase/firebaseConfig";
 import {
   onAuthStateChanged,
-  getIdToken,
-  signOut,
-  auth,
+  getIdToken
 } from "firebase/auth";
 import {
   ArrowRight,
