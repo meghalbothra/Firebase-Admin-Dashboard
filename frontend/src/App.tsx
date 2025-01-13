@@ -4,9 +4,8 @@ import { Dashboard } from './components/Dashboard';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import PrivateRoute from './components/PrivateRoute';
-import Profile from './components/Profile';
-import Alert from './components/Settings';
-
+import Profile from './components/Profile'; // Import the Profile component
+import Alert from './components/Settings'
 function App() {
   return (
     <Router>
@@ -15,9 +14,9 @@ function App() {
         <Route
           path="/"
           element={
-            
+            <PrivateRoute>
               <Dashboard />
-            
+            </PrivateRoute>
           }
         />
         
@@ -25,22 +24,21 @@ function App() {
         <Route
           path="/profile"
           element={
-            
+            <PrivateRoute>
               <Profile />
-            
+            </PrivateRoute>
           }
         />
-        
         <Route
           path="/settings"
           element={
-            
+            <PrivateRoute>
               <Alert />
-            
+            </PrivateRoute>
           }
         />
         
-        {/* Login and Signup routes */}
+        {/* Login and Signup routes (no protection required here) */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
       </Routes>
