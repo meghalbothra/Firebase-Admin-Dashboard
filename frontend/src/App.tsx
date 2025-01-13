@@ -15,9 +15,9 @@ function App() {
         <Route
           path="/"
           element={
-            <PrivateRoute>
+            
               <Dashboard />
-            </PrivateRoute>
+            
           }
         />
         
@@ -25,18 +25,18 @@ function App() {
         <Route
           path="/profile"
           element={
-            <PrivateRoute>
+            
               <Profile />
-            </PrivateRoute>
+            
           }
         />
         
         <Route
           path="/settings"
           element={
-            <PrivateRoute>
+            
               <Alert />
-            </PrivateRoute>
+            
           }
         />
         
