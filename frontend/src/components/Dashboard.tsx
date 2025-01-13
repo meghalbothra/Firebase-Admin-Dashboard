@@ -83,17 +83,10 @@ export function Dashboard() {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(`https://firebase-admin-dashboard-v6q5.onrender.com/users?token=${token}`, {
-          method: 'GET',
-          mode: 'no-cors', // Use no-cors mode
-        });
-    
-        // Note: With no-cors, you cannot reliably access the response data.
+        const response = await fetch(`https://firebase-admin-dashboard-v6q5.onrender.com/users?token=${token}`);
         if (!response.ok) {
           throw new Error(`Failed to fetch users: ${response.statusText}`);
         }
-    
-        // This will not work as expected in no-cors mode:
         const data: User[] = await response.json();
         setUsers(data);
       } catch (err: unknown) {
@@ -106,10 +99,9 @@ export function Dashboard() {
         setLoading(false);
       }
     };
-    
+
     fetchUsers();
-    }, [location.state, navigate]);
-    
+  }, [location.state, navigate]);
 
   const handleCardClick = (section: string) => {
     const tabIndex = tabs.findIndex((tab) => tab === section);
