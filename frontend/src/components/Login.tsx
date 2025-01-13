@@ -5,7 +5,6 @@ import { trace } from "firebase/performance";
 import { performance } from "../firebase/firebaseConfig";
 import { getFirestore, collection, addDoc, increment, updateDoc, doc, getDoc, setDoc, arrayUnion } from "firebase/firestore";
 import { ArrowRight, Mail, Lock, Loader, Check, AlertCircle } from "lucide-react";
-import { getAuth, onAuthStateChanged, getIdToken } from "firebase/auth";
 
 const db = getFirestore();
 
@@ -87,27 +86,13 @@ const Login = () => {
   
     const loginTrace = trace(performance, "login-api-trace");
     loginTrace.start();
-  
+    
     const startTime = Date.now();
   
     try {
       const { token } = await login(email, password);
       console.log("Token:", token);
-      
-      // Store token
       localStorage.setItem("authToken", token);
-      
-      // Refresh token immediately
-      const auth = getAuth();
-      const user = auth.currentUser;
-  
-      if (user) {
-        // Get fresh token
-        const refreshedToken = await getIdToken(user, true);  // `true` forces token refresh
-        console.log("Refreshed Token:", refreshedToken);
-        localStorage.setItem("authToken", refreshedToken);  // Store the refreshed token
-      }
-      
       const responseTime = Date.now() - startTime;
       await logMetrics(true, responseTime);
       setShowSuccess(true);
@@ -117,7 +102,7 @@ const Login = () => {
     } catch (err) {
       const responseTime = Date.now() - startTime;
       await logMetrics(false, responseTime);
-  
+      
       if (err instanceof Error) {
         setError(err.message || "Failed to log in. Please try again.");
         await logErrorToFirestore(err.message, responseTime);
@@ -130,7 +115,7 @@ const Login = () => {
       setLoading(false);
     }
   };
-  
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 transition-all duration-1000">
       <div 
