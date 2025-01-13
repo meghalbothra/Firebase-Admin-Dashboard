@@ -27,7 +27,7 @@ app = FastAPI()
 
 # Add CORS Middleware
 origins = [
-    "http://localhost:5173",  # Frontend URL, change this as per your frontend location
+    "http://localhost:5173", "https://firebase-admin-dashboard-4bu5n9gx2-meghals-projects.vercel.app" # Frontend URL, change this as per your frontend location
     # Add other allowed origins if necessary
 ]
 
