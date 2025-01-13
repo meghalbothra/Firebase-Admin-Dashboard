@@ -3,8 +3,31 @@ import { login } from "../firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { trace } from "firebase/performance";
 import { performance } from "../firebase/firebaseConfig";
-import { getFirestore, collection, addDoc, increment, updateDoc, doc, getDoc, setDoc, arrayUnion } from "firebase/firestore";
-import { ArrowRight, Mail, Lock, Loader, Check, AlertCircle } from "lucide-react";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  increment,
+  updateDoc,
+  doc,
+  getDoc,
+  setDoc,
+  arrayUnion,
+} from "firebase/firestore";
+import {
+  onAuthStateChanged,
+  getIdToken,
+  signOut,
+  auth,
+} from "firebase/auth";
+import {
+  ArrowRight,
+  Mail,
+  Lock,
+  Loader,
+  Check,
+  AlertCircle,
+} from "lucide-react";
 
 const db = getFirestore();
 
@@ -34,17 +57,45 @@ const Login = () => {
     setIsValidPassword(password.length >= 6);
   }, [password]);
 
+  // Listen to authentication state changes
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const token = await user.getIdToken(true); // Force token refresh
+          localStorage.setItem("authToken", token);
+          
+          // Setup token refresh logic
+          const idTokenResult = await user.getIdTokenResult();
+          const expirationTime = idTokenResult.expirationTime;
+          const delay = new Date(expirationTime).getTime() - Date.now() - 60000; // Refresh 1 minute before expiry
+
+          setTimeout(async () => {
+            const refreshedToken = await user.getIdToken(true);
+            localStorage.setItem("authToken", refreshedToken);
+          }, delay);
+        } catch (err) {
+          console.error("Error refreshing token:", err);
+        }
+      } else {
+        localStorage.removeItem("authToken");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   const logMetrics = async (isSuccessful, responseTime) => {
     if (responseTime === undefined) {
       console.error("Invalid responseTime: undefined");
       return;
     }
-  
+
     const metricsDocRef = doc(db, "apiMetrics", "login-metrics");
-  
+
     try {
       const docSnapshot = await getDoc(metricsDocRef);
-  
+
       if (docSnapshot.exists()) {
         await updateDoc(metricsDocRef, {
           totalCalls: increment(1),
@@ -76,23 +127,23 @@ const Login = () => {
       console.error("Error logging error to Firestore:", err);
     }
   };
-  
+
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!isValidEmail || !isValidPassword) return;
-    
+
     setLoading(true);
     setError("");
-  
+
     const loginTrace = trace(performance, "login-api-trace");
     loginTrace.start();
-    
+
     const startTime = Date.now();
-  
+
     try {
       const { token } = await login(email, password);
-      console.log("Token:", token);
       localStorage.setItem("authToken", token);
+
       const responseTime = Date.now() - startTime;
       await logMetrics(true, responseTime);
       setShowSuccess(true);
@@ -102,7 +153,7 @@ const Login = () => {
     } catch (err) {
       const responseTime = Date.now() - startTime;
       await logMetrics(false, responseTime);
-      
+
       if (err instanceof Error) {
         setError(err.message || "Failed to log in. Please try again.");
         await logErrorToFirestore(err.message, responseTime);
@@ -118,15 +169,14 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 transition-all duration-1000">
-      <div 
+      <div
         className={`w-full max-w-md transform transition-all duration-700 ease-out ${
-          formActive ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+          formActive ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
         }`}
       >
         <div className="relative bg-white backdrop-blur-lg bg-opacity-90 shadow-2xl rounded-3xl p-8 space-y-6">
-          {/* Animated background gradient */}
           <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 via-purple-400/10 to-pink-400/10 rounded-3xl -z-10 animate-gradient-x"></div>
-          
+
           <div className="space-y-2 text-center transform transition-all duration-500">
             <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
               Welcome Back
@@ -146,27 +196,29 @@ const Login = () => {
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-4">
               <div className="relative group">
-                <Mail 
+                <Mail
                   className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
-                    focusedInput === 'email' ? 'text-blue-500' : 'text-gray-400'
+                    focusedInput === "email" ? "text-blue-500" : "text-gray-400"
                   }`}
                 />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  onFocus={() => setFocusedInput('email')}
-                  onBlur={() => setFocusedInput('')}
+                  onFocus={() => setFocusedInput("email")}
+                  onBlur={() => setFocusedInput("")}
                   className={`w-full pl-12 pr-12 py-4 border-2 rounded-xl outline-none transition-all duration-300 
-                    ${focusedInput === 'email' ? 'border-blue-500 bg-blue-50/30' : 'border-gray-200 hover:border-gray-300'}
-                    ${isValidEmail && email ? 'border-green-500 bg-green-50/30' : ''}`}
+                    ${focusedInput === "email" ? "border-blue-500 bg-blue-50/30" : "border-gray-200 hover:border-gray-300"}
+                    ${isValidEmail && email ? "border-green-500 bg-green-50/30" : ""}`}
                   placeholder="Email address"
                   required
                 />
                 {email && (
-                  <div className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${
-                    isValidEmail ? 'text-green-500 scale-100' : 'text-red-500 scale-100'
-                  }`}>
+                  <div
+                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${
+                      isValidEmail ? "text-green-500 scale-100" : "text-red-500 scale-100"
+                    }`}
+                  >
                     {isValidEmail ? (
                       <Check className="w-5 h-5" />
                     ) : (
@@ -177,20 +229,20 @@ const Login = () => {
               </div>
 
               <div className="relative group">
-                <Lock 
+                <Lock
                   className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
-                    focusedInput === 'password' ? 'text-blue-500' : 'text-gray-400'
+                    focusedInput === "password" ? "text-blue-500" : "text-gray-400"
                   }`}
                 />
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  onFocus={() => setFocusedInput('password')}
-                  onBlur={() => setFocusedInput('')}
+                  onFocus={() => setFocusedInput("password")}
+                  onBlur={() => setFocusedInput("")}
                   className={`w-full pl-12 pr-12 py-4 border-2 rounded-xl outline-none transition-all duration-300 
-                    ${focusedInput === 'password' ? 'border-blue-500 bg-blue-50/30' : 'border-gray-200 hover:border-gray-300'}
-                    ${isValidPassword && password ? 'border-green-500 bg-green-50/30' : ''}`}
+                    ${focusedInput === "password" ? "border-blue-500 bg-blue-50/30" : "border-gray-200 hover:border-gray-300"}
+                    ${isValidPassword && password ? "border-green-500 bg-green-50/30" : ""}`}
                   placeholder="Password"
                   required
                 />
