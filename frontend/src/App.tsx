@@ -22,7 +22,7 @@ function App() {
         
         {/* Protecting the Profile route with PrivateRoute */}
         <Route
-          path="/profile"
+          path="https://firebase-admin-dashboard-4bu5n9gx2-meghals-projects.vercel.app/profile"
           element={
             <PrivateRoute>
               <Profile />
@@ -30,7 +30,7 @@ function App() {
           }
         />
         <Route
-          path="/settings"
+          path="https://firebase-admin-dashboard-4bu5n9gx2-meghals-projects.vercel.app/settings"
           element={
             <PrivateRoute>
               <Alert />
@@ -39,8 +39,8 @@ function App() {
         />
         
         {/* Login and Signup routes (no protection required here) */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+        <Route path="https://firebase-admin-dashboard-4bu5n9gx2-meghals-projects.vercel.app/login" element={<Login />} />
+        <Route path="https://firebase-admin-dashboard-4bu5n9gx2-meghals-projects.vercel.app/signup" element={<Signup />} />
       </Routes>
     </Router>
   );
