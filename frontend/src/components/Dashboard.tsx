@@ -83,7 +83,7 @@ export function Dashboard() {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(`http://127.0.0.1:8000/users?token=${token}`);
+        const response = await fetch(`https://firebase-admin-dashboard-v6q5.onrender.com/users?token=${token}`);
         if (!response.ok) {
           throw new Error(`Failed to fetch users: ${response.statusText}`);
         }

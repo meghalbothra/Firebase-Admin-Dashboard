@@ -155,7 +155,7 @@ const Chatbot = ({ statCardInfo }) => {
       console.log('Sending message:', input);
       console.log('Stat Card Info:', statCardInfo);  // Log stat card info before sending
 
-      const response = await fetch('http://127.0.0.1:8000/chat', {
+      const response = await fetch('https://firebase-admin-dashboard-v6q5.onrender.com/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: input, statCardInfo }),
@@ -204,7 +204,7 @@ const Chatbot = ({ statCardInfo }) => {
     // Log the request payload before sending the API call
     console.log('Sending stat request payload:', requestPayload);
 
-    const response = await fetch('http://127.0.0.1:8000/chat', {
+    const response = await fetch('https://firebase-admin-dashboard-v6q5.onrender.com/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
