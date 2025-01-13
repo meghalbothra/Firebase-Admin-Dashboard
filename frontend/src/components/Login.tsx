@@ -249,7 +249,7 @@ const Login = () => {
           <p className="text-center text-gray-600">
             Don't have an account?{" "}
             <a 
-              href="https://firebase-admin-dashboard-v6q5.onrender.com/signup" 
+              href="/signup" 
               className="relative inline-block text-blue-500 hover:text-blue-600 font-medium transition-colors duration-300"
             >
               <span className="relative z-10">Sign up</span>
