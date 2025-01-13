@@ -26,14 +26,14 @@ initialize_firebase()
 app = FastAPI()
 
 # Add CORS Middleware
-# origins = [
-#     'http://localhost:5173', 'https://firebase-admin-dashboard-4bu5n9gx2-meghals-projects.vercel.app' # Frontend URL, change this as per your frontend location
-#     # Add other allowed origins if necessary
-# ]
+origins = [
+    'http://localhost:5173', 'https://firebase-admin-dashboard-4bu5n9gx2-meghals-projects.vercel.app' # Frontend URL, change this as per your frontend location
+    # Add other allowed origins if necessary
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],  # Allow all HTTP methods
     allow_headers=["Content-Type", "Authorization"]  # Allow all HTTP headers
