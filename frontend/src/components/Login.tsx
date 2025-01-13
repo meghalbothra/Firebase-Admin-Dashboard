@@ -14,7 +14,7 @@ import {
   setDoc,
   arrayUnion,
 } from "firebase/firestore";
-import { signOut } from 'firebase/auth';
+import { logout } from 'firebase/auth';
 import { auth } from "../firebase/firebaseConfig";
 import {
   onAuthStateChanged,
