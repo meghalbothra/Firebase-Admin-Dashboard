@@ -83,13 +83,30 @@ export function Dashboard() {
       try {
         setLoading(true);
         setError(null);
+    
+        console.log(`Sending request to: https://firebase-admin-dashboard-v6q5.onrender.com/users?token=${token}`);
+        
         const response = await fetch(`https://firebase-admin-dashboard-v6q5.onrender.com/users?token=${token}`);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch users: ${response.statusText}`);
+        console.log('Response received:', {
+          status: response.status,
+          statusText: response.statusText,
+          ok: response.ok,
+        });
+    
+        const responseBody = await response.text(); // Fetch as text to inspect raw response
+        console.log('Raw response body:', responseBody);
+    
+        try {
+          const data: User[] = JSON.parse(responseBody); // Parse JSON manually
+          console.log('Parsed data:', data);
+          setUsers(data);
+        } catch (jsonError) {
+          console.error('Error parsing JSON:', jsonError);
+          throw new Error('Failed to parse server response as JSON.');
         }
-        const data: User[] = await response.json();
-        setUsers(data);
       } catch (err: unknown) {
+        console.error('Error occurred while fetching users:', err);
+    
         if (err instanceof Error) {
           setError(err.message || 'An error occurred while fetching users.');
         } else {
@@ -99,8 +116,8 @@ export function Dashboard() {
         setLoading(false);
       }
     };
-
-    fetchUsers();
+    
+    fetchUsers();    
   }, [location.state, navigate]);
 
   const handleCardClick = (section: string) => {
