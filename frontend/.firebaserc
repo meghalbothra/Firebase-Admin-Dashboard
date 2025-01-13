@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "trekathon-bed11",
+    "dev": "trekathon-bed11"
+  },
+  "targets": {},
+  "etags": {}
+}
