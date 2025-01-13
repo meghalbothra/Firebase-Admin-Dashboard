@@ -80,45 +80,27 @@ export function Dashboard() {
     }
 
     const fetchUsers = async () => {
-      console.log('Starting fetchUsers function...');
-      
       try {
         setLoading(true);
         setError(null);
-    
-        console.log(`Sending request to: https://firebase-admin-dashboard-v6q5.onrender.com/users?token=${token}`);
-        
         const response = await fetch(`https://firebase-admin-dashboard-v6q5.onrender.com/users?token=${token}`);
-        
-        console.log('Response received:', {
-          status: response.status,
-          statusText: response.statusText,
-        });
-    
         if (!response.ok) {
           throw new Error(`Failed to fetch users: ${response.statusText}`);
         }
-    
         const data: User[] = await response.json();
-        
-        console.log('Fetched data successfully:', data);
-        
         setUsers(data);
       } catch (err: unknown) {
-        console.error('Error occurred while fetching users:', err);
-    
         if (err instanceof Error) {
           setError(err.message || 'An error occurred while fetching users.');
         } else {
           setError('An unknown error occurred.');
         }
       } finally {
-        console.log('Finalizing fetchUsers function...');
         setLoading(false);
       }
     };
-    
-    fetchUsers();    
+
+    fetchUsers();
   }, [location.state, navigate]);
 
   const handleCardClick = (section: string) => {
