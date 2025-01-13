@@ -247,9 +247,11 @@ const Login = () => {
                   required
                 />
                 {password && (
-                  <div className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${
-                    isValidPassword ? 'text-green-500 scale-100' : 'text-red-500 scale-100'
-                  }`}>
+                  <div
+                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-all duration-300 ${
+                      isValidPassword ? "text-green-500 scale-100" : "text-red-500 scale-100"
+                    }`}
+                  >
                     {isValidPassword ? (
                       <Check className="w-5 h-5" />
                     ) : (
