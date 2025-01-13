@@ -41,7 +41,7 @@ const PrivateRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
   }
 
   if (!user) {
-    return <Navigate to="https://firebase-admin-dashboard-4bu5n9gx2-meghals-projects.vercel.app/login" />; // Redirect if not authenticated
+    return <Navigate to="/login" />; // Redirect if not authenticated
   }
 
   if (isAdmin === false) {

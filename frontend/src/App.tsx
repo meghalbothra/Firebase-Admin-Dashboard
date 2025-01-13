@@ -4,8 +4,9 @@ import { Dashboard } from './components/Dashboard';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import PrivateRoute from './components/PrivateRoute';
-import Profile from './components/Profile'; // Import the Profile component
-import Alert from './components/Settings'
+import Profile from './components/Profile';
+import Alert from './components/Settings';
+
 function App() {
   return (
     <Router>
@@ -22,15 +23,16 @@ function App() {
         
         {/* Protecting the Profile route with PrivateRoute */}
         <Route
-          path="https://firebase-admin-dashboard-4bu5n9gx2-meghals-projects.vercel.app/profile"
+          path="/profile"
           element={
             <PrivateRoute>
               <Profile />
             </PrivateRoute>
           }
         />
+        
         <Route
-          path="https://firebase-admin-dashboard-4bu5n9gx2-meghals-projects.vercel.app/settings"
+          path="/settings"
           element={
             <PrivateRoute>
               <Alert />
@@ -38,9 +40,9 @@ function App() {
           }
         />
         
-        {/* Login and Signup routes (no protection required here) */}
-        <Route path="https://firebase-admin-dashboard-4bu5n9gx2-meghals-projects.vercel.app/login" element={<Login />} />
-        <Route path="https://firebase-admin-dashboard-4bu5n9gx2-meghals-projects.vercel.app/signup" element={<Signup />} />
+        {/* Login and Signup routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
     </Router>
   );
