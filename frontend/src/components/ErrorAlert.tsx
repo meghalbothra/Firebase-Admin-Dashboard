@@ -60,7 +60,7 @@ export function ErrorAlert({ error }: ErrorAlertProps) {
 
   return (
     <div className="relative mb-4">
-      <Alert className={`flex flex-col sm:flex-row items-start gap-4 pr-12 ${styles.container}`}>
+      <Alert className={`flex flex-row items-start gap-4 pr-12 ${styles.container}`}>
         {/* Severity Icon */}
         <div className={`flex-shrink-0 ${styles.icon}`}>
           <AlertTriangle className="h-5 w-5" />
@@ -95,4 +95,42 @@ export function ErrorAlert({ error }: ErrorAlertProps) {
   );
 }
 
-export default ErrorAlert;
+// ErrorAlertContainer to handle multiple alerts
+interface ErrorAlertsContainerProps {
+  errors: Array<{
+    id: string;
+    message: string;
+    timestamp: string;
+    severity: 'critical' | 'warning';
+  }>;
+}
+
+export function ErrorAlertsContainer({ errors }: ErrorAlertsContainerProps) {
+  return (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      {errors.map((error) => (
+        <ErrorAlert key={error.id} error={error} />
+      ))}
+    </div>
+  );
+}
+
+// Example usage
+const exampleErrors = [
+  {
+    id: '1',
+    message: 'System critical error detected',
+    timestamp: '2 minutes ago',
+    severity: 'critical' as const,
+  },
+  {
+    id: '2',
+    message: 'Warning: Low memory detected',
+    timestamp: '5 minutes ago',
+    severity: 'warning' as const,
+  },
+];
+
+export default function ErrorAlertsExample() {
+  return <ErrorAlertsContainer errors={exampleErrors} />;
+}
