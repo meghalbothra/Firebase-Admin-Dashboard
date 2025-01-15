@@ -4,7 +4,7 @@ import { AlertTriangle, X, Clock } from 'lucide-react';
 // Alert component (UI component)
 export const Alert = ({ className, children }: { className: string; children: React.ReactNode }) => {
   return (
-    <div className={`rounded-lg p-4 sm:p-6 lg:p-8 ${className}`}>
+    <div className={`relative rounded-lg border p-4 ${className}`}>
       {children}
     </div>
   );
@@ -12,14 +12,18 @@ export const Alert = ({ className, children }: { className: string; children: Re
 
 export const AlertTitle = ({ className, children }: { className: string; children: React.ReactNode }) => {
   return (
-    <h3 className={`text-base sm:text-lg lg:text-xl font-semibold leading-tight ${className}`}>
+    <h5 className={`mb-1 font-medium leading-none tracking-tight ${className}`}>
       {children}
-    </h3>
+    </h5>
   );
 };
 
 export const AlertDescription = ({ className, children }: { className: string; children: React.ReactNode }) => {
-  return <div className={`space-y-2 sm:space-y-3 lg:space-y-4 ${className}`}>{children}</div>;
+  return (
+    <div className={`text-sm ${className}`}>
+      {children}
+    </div>
+  );
 };
 
 // ErrorAlert component
@@ -35,7 +39,7 @@ interface ErrorAlertProps {
 export function ErrorAlert({ error }: ErrorAlertProps) {
   const severityStyles = {
     critical: {
-      container: 'border-red-200 bg-red-50 shadow',
+      container: 'border-red-200 bg-red-50',
       icon: 'text-red-600',
       title: 'text-red-900',
       message: 'text-red-800',
@@ -43,7 +47,7 @@ export function ErrorAlert({ error }: ErrorAlertProps) {
       border: 'bg-red-600',
     },
     warning: {
-      container: 'border-yellow-200 bg-yellow-50 shadow',
+      container: 'border-yellow-200 bg-yellow-50',
       icon: 'text-yellow-600',
       title: 'text-yellow-900',
       message: 'text-yellow-800',
@@ -55,47 +59,39 @@ export function ErrorAlert({ error }: ErrorAlertProps) {
   const styles = severityStyles[error.severity];
 
   return (
-    <Alert className={`relative ${styles.container}`}>
-      <div className="flex sm:flex-col items-start gap-4 sm:gap-4 lg:gap-8 sm:w-full">
+    <div className="relative mb-4">
+      <Alert className={`flex flex-col sm:flex-row items-start gap-4 pr-12 ${styles.container}`}>
         {/* Severity Icon */}
-        <AlertTriangle
-          aria-hidden="true"
-          className={`h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 ${styles.icon}`}
-        />
+        <div className={`flex-shrink-0 ${styles.icon}`}>
+          <AlertTriangle className="h-5 w-5" />
+        </div>
 
         {/* Error Details */}
-        <div className="flex-1">
+        <div className="flex-1 space-y-1">
           <AlertTitle className={styles.title}>
             {error.severity === 'critical' ? 'Critical Error' : 'Warning'}
           </AlertTitle>
-          <AlertDescription>
-            <p className={`text-sm sm:text-base lg:text-lg ${styles.message}`}>{error.message}</p>
-            <div className="flex items-center gap-3 sm:gap-4">
-              <Clock
-                aria-hidden="true"
-                className={`h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 ${styles.timestamp}`}
-              />
-              <span className={`text-xs sm:text-sm lg:text-base ${styles.timestamp}`}>
-                {error.timestamp}
-              </span>
-            </div>
+          <AlertDescription className={styles.message}>
+            {error.message}
           </AlertDescription>
+          <div className="flex items-center gap-1 text-sm">
+            <Clock className="h-4 w-4" />
+            <span className={styles.timestamp}>{error.timestamp}</span>
+          </div>
         </div>
 
         {/* Dismiss Button */}
         <button
-          className={`rounded-full p-2 sm:p-3 transition-colors hover:bg-white/20 focus:ring focus:ring-offset-1 ${styles.icon}`}
-          aria-label="Dismiss alert"
+          className={`absolute right-4 top-4 rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 ${styles.icon}`}
         >
-          <X className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7" />
+          <X className="h-4 w-4" />
+          <span className="sr-only">Close</span>
         </button>
-      </div>
 
-      {/* Decorative Left Border */}
-      <div
-        className={`absolute left-0 top-0 bottom-0 w-1 sm:w-1.5 lg:w-2 ${styles.border}`}
-      />
-    </Alert>
+        {/* Decorative Left Border */}
+        <div className={`absolute left-0 top-0 h-full w-1 rounded-l-lg ${styles.border}`} />
+      </Alert>
+    </div>
   );
 }
 
