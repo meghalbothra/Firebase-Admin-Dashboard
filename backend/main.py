@@ -103,29 +103,23 @@ async def chat_endpoint(chat_request: ChatRequest, request: Request):
             )
             return ChatResponse(reply=starting_message)
 
-        # Construct messages as a flat list
-        messages = [
-            HumanMessage(content=f"{stat_context}\n\n{chat_request.message.strip()}")
-        ]
+        # Create a single message instead of a list
+        message_content = f"{stat_context}\n\n{chat_request.message.strip()}"
         
-        # Debug the message structure
-        logger.debug(f"Messages passed to LLM: {messages}")
+        # Debug the message content
+        logger.debug(f"Message content: {message_content}")
 
         # Generate the response
-        response = llm.generate(messages=messages)
+        response = llm.invoke(message_content)  # Use invoke instead of generate
+        
+        if not response:
+            raise ValueError("No response received from the model.")
 
-        if not response.generations:
-            raise ValueError("No generations found in the response.")
-
-        ai_message = response.generations[0][0].message
-        reply = ai_message.content if ai_message else "No response"
-
-        return ChatResponse(reply=clean_reply(reply))
+        return ChatResponse(reply=clean_reply(str(response)))
 
     except Exception as e:
         logger.error("Error processing chat request: %s", str(e), exc_info=True)
         raise HTTPException(status_code=500, detail="An error occurred while processing your request.")
-
 
 def clean_reply(reply: str) -> str:
     reply = re.sub(r"\*\*(.*?)\*\*", r"\1", reply)  # Remove bold formatting
