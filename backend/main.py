@@ -79,29 +79,17 @@ set_debug(False)
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(chat_request: ChatRequest, request: Request):
+    """
+    Chat endpoint to handle user queries.
+    """
     try:
-        # Use the client's IP as a session identifier (or another unique identifier)
         client_id = request.client.host
-
-        # Retrieve stat card info
         stat_card_info = stat_card_store.get(client_id, {})
         if chat_request.stat_card_info:
             stat_card_info.update(chat_request.stat_card_info)
             stat_card_store[client_id] = stat_card_info
 
-        # First-time interaction
-        if not chat_request.message or not chat_request.message.strip():
-            starting_message = (
-                "Hello! I am your virtual assistant. How can I assist you today?\n\n"
-                f"Here are some system stats:\n"
-                f"- Total Users: {stat_card_info.get('totalUsers', 'N/A')}\n"
-                f"- Active Errors: {stat_card_info.get('activeErrors', 'N/A')}\n"
-                f"- API Requests: {stat_card_info.get('apiRequests', 'N/A')}\n"
-                f"- Database Operations: {stat_card_info.get('databaseOps', 'N/A')}\n"
-            )
-            return ChatResponse(reply=starting_message)
-
-        # Prepare messages for the model
+        # Default stat context
         stat_context = (
             f"Here are some system stats:\n"
             f"- Total Users: {stat_card_info.get('totalUsers', 'N/A')}\n"
@@ -109,20 +97,27 @@ async def chat_endpoint(chat_request: ChatRequest, request: Request):
             f"- API Requests: {stat_card_info.get('apiRequests', 'N/A')}\n"
             f"- Database Operations: {stat_card_info.get('databaseOps', 'N/A')}\n"
         )
-        messages = [
-            HumanMessage(content=f"{stat_context}\n\n{chat_request.message.strip()}")
-        ]
 
-        # Log message content for debugging
-        print("Messages sent to LLM:", [msg.content for msg in messages])
+        # Handle empty messages
+        if not chat_request.message or not chat_request.message.strip():
+            starting_message = (
+                f"Hello! I am your virtual assistant. How can I assist you today?\n\n{stat_context}"
+            )
+            return ChatResponse(reply=starting_message)
+
+        # Create messages as a flat list
+        messages = [HumanMessage(content=f"{stat_context}\n\n{chat_request.message.strip()}")]
 
         # Call the language model
         response = llm.generate(messages=messages)
 
-        # Extract reply
-        reply = response.generations[0][0].message.content
+        # Extract the response content
+        if not response.generations:
+            raise ValueError("No generations found in the response.")
 
-        # Clean and return the reply
+        ai_message = response.generations[0][0].message
+        reply = ai_message.content if ai_message else "No response"
+
         return ChatResponse(reply=clean_reply(reply))
 
     except Exception as e:
