@@ -164,7 +164,7 @@ const ProfilePage: React.FC = () => {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-500">Member Since</label>
-                      <p className="mt-1 text-sm text-gray-900">January 2024</p>
+                      <p className="mt-1 text-sm text-gray-900">January 2025</p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-500">Email Status</label>
