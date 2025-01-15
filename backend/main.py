@@ -89,7 +89,6 @@ async def chat_endpoint(chat_request: ChatRequest, request: Request):
             stat_card_info.update(chat_request.stat_card_info)
             stat_card_store[client_id] = stat_card_info
 
-        # Default stat context
         stat_context = (
             f"Here are some system stats:\n"
             f"- Total Users: {stat_card_info.get('totalUsers', 'N/A')}\n"
@@ -98,20 +97,23 @@ async def chat_endpoint(chat_request: ChatRequest, request: Request):
             f"- Database Operations: {stat_card_info.get('databaseOps', 'N/A')}\n"
         )
 
-        # Handle empty messages
         if not chat_request.message or not chat_request.message.strip():
             starting_message = (
                 f"Hello! I am your virtual assistant. How can I assist you today?\n\n{stat_context}"
             )
             return ChatResponse(reply=starting_message)
 
-        # Create messages as a flat list
-        messages = [HumanMessage(content=f"{stat_context}\n\n{chat_request.message.strip()}")]
+        # Construct messages as a flat list
+        messages = [
+            HumanMessage(content=f"{stat_context}\n\n{chat_request.message.strip()}")
+        ]
+        
+        # Debug the message structure
+        logger.debug(f"Messages passed to LLM: {messages}")
 
-        # Call the language model
+        # Generate the response
         response = llm.generate(messages=messages)
 
-        # Extract the response content
         if not response.generations:
             raise ValueError("No generations found in the response.")
 
