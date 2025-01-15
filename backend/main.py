@@ -147,6 +147,9 @@ def clean_reply(reply: str) -> str:
     # Remove bold formatting
     reply = re.sub(r"\*\*(.*?)\*\*", r"\1", reply)
     
+    # Convert bullet points (*) to dashes (-)
+    reply = re.sub(r'\n\s*\*\s*', '\n- ', reply)
+    
     # Replace multiple spaces with a single space
     reply = re.sub(r'\s+', ' ', reply)
     
