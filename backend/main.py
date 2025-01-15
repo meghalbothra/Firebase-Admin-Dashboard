@@ -101,7 +101,7 @@ async def chat_endpoint(chat_request: ChatRequest, request: Request):
             starting_message = (
                 f"Hello! I am your virtual assistant. How can I assist you today?\n\n{stat_context}"
             )
-            return ChatResponse(reply=starting_message)
+            return ChatResponse(reply=clean_reply(starting_message))
 
         # Create a single message instead of a list
         message_content = f"{stat_context}\n\n{chat_request.message.strip()}"
@@ -110,18 +110,50 @@ async def chat_endpoint(chat_request: ChatRequest, request: Request):
         logger.debug(f"Message content: {message_content}")
 
         # Generate the response
-        response = llm.invoke(message_content)  # Use invoke instead of generate
+        response = llm.invoke(message_content)
         
         if not response:
             raise ValueError("No response received from the model.")
 
-        return ChatResponse(reply=clean_reply(str(response)))
+        # Extract the actual content from the response
+        if hasattr(response, 'content'):
+            reply_text = response.content
+        else:
+            # Handle case where response might be a string or have different structure
+            reply_text = str(response)
+            
+        # Remove any metadata or response formatting
+        reply_text = re.sub(r"content=['\"](.+?)['\"].*?$", r"\1", reply_text, flags=re.DOTALL)
+        reply_text = reply_text.strip()
+
+        # Clean and return the reply
+        cleaned_reply = clean_reply(reply_text)
+        return ChatResponse(reply=cleaned_reply)
 
     except Exception as e:
         logger.error("Error processing chat request: %s", str(e), exc_info=True)
         raise HTTPException(status_code=500, detail="An error occurred while processing your request.")
 
 def clean_reply(reply: str) -> str:
-    reply = re.sub(r"\*\*(.*?)\*\*", r"\1", reply)  # Remove bold formatting
-    reply = reply.replace("\n", " ")  # Remove excessive newlines
-    return reply
+    """
+    Clean the reply text by removing formatting and standardizing spacing.
+    """
+    # Remove content= and response_metadata if present
+    reply = re.sub(r"content=['\"]|['\"] response_metadata=.*$", "", reply)
+    
+    # Remove any remaining single or double quotes at the start/end
+    reply = reply.strip("'\"")
+    
+    # Remove bold formatting
+    reply = re.sub(r"\*\*(.*?)\*\*", r"\1", reply)
+    
+    # Replace multiple spaces with a single space
+    reply = re.sub(r'\s+', ' ', reply)
+    
+    # Replace newlines with spaces
+    reply = reply.replace("\n", " ")
+    
+    # Final cleanup of any double spaces and trim
+    reply = " ".join(reply.split())
+    
+    return reply.strip()
