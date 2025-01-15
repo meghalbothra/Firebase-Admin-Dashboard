@@ -136,7 +136,9 @@ async def chat_endpoint(chat_request: ChatRequest, request: Request):
         return ChatResponse(reply=reply)
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error("Error processing chat request: %s", str(e), exc_info=True)
+        raise HTTPException(status_code=500, detail="An error occurred while processing your request.")
+
     
 
 def clean_reply(reply: str) -> str:
