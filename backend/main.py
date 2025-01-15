@@ -15,7 +15,7 @@ import os
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.schema import BaseMessage, HumanMessage
 import re
-
+from langchain_core.globals import set_debug
 # Load environment variables from .env file
 load_dotenv()
 
@@ -73,6 +73,9 @@ llm: ChatGoogleGenerativeAI = ChatGoogleGenerativeAI(
 @app.get("/")
 async def read_root():
     return {"message": "Hello, World!"}
+
+# Disable debug mode
+set_debug(False)
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(chat_request: ChatRequest, request: Request):
