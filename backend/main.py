@@ -26,19 +26,23 @@ initialize_firebase()
 app = FastAPI()
 
 # Add CORS Middleware
+from fastapi.middleware.cors import CORSMiddleware
+
+# Define allowed origins
 origins = [
-    'http://localhost:5173', 'https://firebase-admin-dashboard-4bu5n9gx2-meghals-projects.vercel.app' , "https://firebase-admin-dashboard-flax.vercel.app" # Frontend URL, change this as per your frontend location
-    # Add other allowed origins if necessary
+    "http://localhost:5173",  # Local development frontend
+    "https://firebase-admin-dashboard-4bu5n9gx2-meghals-projects.vercel.app",  # Production frontend (example 1)
+    "https://firebase-admin-dashboard-flax.vercel.app"  # Production frontend (example 2)
 ]
 
+# Add CORS Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],  # Allow all HTTP methods
-    allow_headers=["*"]  # Allow all HTTP headers
+    allow_origins=origins,  # Explicitly define allowed origins
+    allow_credentials=True,  # Allow credentials (e.g., cookies, authorization headers)
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Restrict to necessary methods
+    allow_headers=["Authorization", "Content-Type", "Accept"],  # Restrict to necessary headers
 )
-
 
 app.include_router(Alert.router, tags=["Alert"])
 app.include_router(user.router, tags=["Users"])  # Include the user router
