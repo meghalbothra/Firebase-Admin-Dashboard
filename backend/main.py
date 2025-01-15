@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from datetime import datetime, timezone
 import os
 from api import user
-
+import logging
 from firebase_setup import initialize_firebase
 from models import UserModel  # Import the UserModel class
 from pydantic import BaseModel
@@ -24,6 +24,9 @@ initialize_firebase()
 
 # Initialize FastAPI app
 app = FastAPI()
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Add CORS Middleware
 from fastapi.middleware.cors import CORSMiddleware
