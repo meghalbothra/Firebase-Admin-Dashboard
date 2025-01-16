@@ -79,18 +79,6 @@ export function Dashboard() {
       return;
     }
 
-    useEffect(() => {
-      const unsubscribe = onSnapshot(collection(db, 'users'), (snapshot) => {
-        setRealTimeData((prevData) => ({
-          ...prevData,
-          activeErrors: snapshot.size, // Update activeErrors with users count
-        }));
-      });
-    
-      return () => unsubscribe();
-    }, []);
-    
-
     const fetchUsers = async () => {
       try {
         setLoading(true);
@@ -258,9 +246,9 @@ export function Dashboard() {
             />
             <StatCard
               title="Active Errors"
-              value={realTimeData.activeErrors.toString()} // Dynamically updated count
+              value={realTimeData.activeErrors.toString()}
               icon={<AlertTriangle className="h-8 w-8 text-red-600" />}
-              trendIcon={<ChevronDown className="h-4 w-4" />}
+              trendIcon={<ChevronDown className="h-4 w-4" />} 
               className="bg-white shadow-lg rounded-xl border border-gray-100 hover:border-red-200 transition-all duration-300"
               onClick={() => handleCardClick('Errors')}
             />
